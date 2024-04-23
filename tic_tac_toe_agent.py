@@ -44,10 +44,13 @@ class Agent:
         """
         Trains the neural network model using the given states, actions, and rewards.
         """
-        for state, action in zip(states, actions, rewards):
+        history_loss = []
+        for state, action, reward in zip(states, actions, rewards):
             target = self.predict(state)
             target[action]=state[action]
-            self.model.fit(np.array([state]), np.array([target]), epochs=1, verbose=0)
+            history = self.model.fit(np.array([state]), np.array([target]), epochs=1, verbose=0)
+            history_loss.append(history.history['loss'][0])
+        return history_loss
 
     def save_model(self, file_path):
         """
