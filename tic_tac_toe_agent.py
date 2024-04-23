@@ -2,6 +2,8 @@
 The tic-tac-toe intelligences, including the neural network model,
 the logic for selecting moves, and the training methodology.
 """
+
+import random
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Input
@@ -31,13 +33,26 @@ class Agent:
         probabilities = self.model.predict(board)[0]
         return probabilities
 
-    def choose_action(self, state):
+    def choose_action(self, state, epsilon=0.1):
         """
         Chooses the best action to take based on the current board state.
         """
+        if random.random() < epsilon:
+            # Random action based on epsilon
+            valid_moves = [i for i in range(len(state)) if state[i] == 0]
+            return random.choice(valid_moves)
+
         probabilities = self.predict(state)
-        probabilities[state != 0] = 0  # Ensure no action on filled cells
+        # Set probabilities for taken spots to -inf
+        probabilities = np.where(state != 0, -np.inf, probabilities)
         action = np.argmax(probabilities)
+
+        if probabilities[action] == -np.inf:
+            # If the selected action is still invalid, choose randomly among the valid moves
+            valid_moves = [i for i in range(len(state)) if state[i] == 0]
+            action = random.choice(valid_moves)
+            print("Fallback to random valid move:", action)
+
         return action
 
     def train(self, states, actions, rewards):
