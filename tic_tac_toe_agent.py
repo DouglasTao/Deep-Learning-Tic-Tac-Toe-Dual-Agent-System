@@ -31,7 +31,7 @@ class Agent:
     def train(self, states, actions, rewards):
         for state, action, reward in zip(states, actions, rewards):
             target = self.predict(state)
-            target[action] = reward
+            target[action]=state[action]
             self.model.fit(np.array([state]), np.array([target]), epochs=1, verbose=0)
 
     def save_model(self, file_path):
