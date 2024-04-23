@@ -3,9 +3,10 @@ The saved models are loaded using the tensorflow.keras.models.load_model method.
 """
 
 
+import os
 import numpy as np
 from keras.models import load_model
-import os
+
 
 # load_model
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +16,9 @@ print("Model loaded successfully from:", model_path)
 
 # Define a simple function to use the model
 def predict_move(board):
+    """
+    Predicts the next move based on the given board state using the loaded model.
+    """
     board = np.array(board).reshape(1, 9)
     probabilities = model.predict(board)[0]
     recommended_action = np.argmax(probabilities)

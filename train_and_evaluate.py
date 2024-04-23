@@ -10,6 +10,9 @@ import os
 import time
 
 def train_agent(episodes):
+    """
+    Train the agent for a specified number of episodes.
+    """
     game = TicTacToe()
     agent = Agent()
 
@@ -24,7 +27,7 @@ def train_agent(episodes):
             game.move(action)
             reward = game.check_winner()
             agent.train([state], [action], [reward])
-            done = (reward is not None)
+            done = reward is not None
 
         if episode % 10 == 0:  # Print every 10 episodes to reduce clutter
             print(f"Episode {episode + 1}/{episodes} completed.")
