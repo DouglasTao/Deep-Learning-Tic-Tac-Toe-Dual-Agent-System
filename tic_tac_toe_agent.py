@@ -1,6 +1,11 @@
+"""
+The tic-tac-toe intelligences, including the neural network model,
+the logic for selecting moves, and the training methodology.
+"""
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Input
+
 
 class Agent:
     def __init__(self):
