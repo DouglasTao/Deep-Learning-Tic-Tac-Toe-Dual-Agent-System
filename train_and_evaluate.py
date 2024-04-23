@@ -6,6 +6,7 @@ as well as controlling the operation of the game.
 
 import os
 import time
+import numpy as np
 from tic_tac_toe_env import TicTacToe
 from tic_tac_toe_agent import Agent
 
@@ -16,8 +17,9 @@ def train_agent(episodes):
     """
     game = TicTacToe()
     agent = Agent()
+    win_count, loss_count, draw_count = 0, 0, 0
 
-    start_time = time.time()  # Record start time
+    start_time = time.time()
 
     for episode in range(episodes):
         game.reset()
@@ -33,19 +35,23 @@ def train_agent(episodes):
             if reward is not None:
                 states.append(state)
                 actions.append(action)
-                rewards.append(reward)
+                rewards.append(reward if reward == game.current_player else -reward)
+                if reward == 1:
+                    win_count += 1
+                elif reward == -1:
+                    loss_count += 1
+                elif reward == 0:
+                    draw_count += 1
             done = reward is not None
 
-        agent.train(states, actions, rewards)
+        loss_history = agent.train(states, actions, rewards)
+        if episode % 10 == 0:
+            print(f"Episode {episode + 1}/{episodes} completed "
+                  f"with average loss {np.mean(loss_history):.4f}")
 
-        if episode % 10 == 0:  # Print every 10 episodes to reduce clutter
-            print(f"Episode {episode + 1}/{episodes} completed.")
-
-    end_time = time.time()  # Record end time
-    training_time = end_time - start_time
-    print(f"Training time: {training_time:.2f} seconds")
-
-    # Save the model
+    total_games = win_count + loss_count + draw_count
+    win_rate = win_count / total_games if total_games != 0 else 0
+    print(f"Win rate: {win_rate:.2f}, Training time: {time.time() - start_time:.2f} seconds")
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_directory = os.path.join(current_dir, "train")
     if not os.path.exists(model_directory):
@@ -54,6 +60,7 @@ def train_agent(episodes):
     agent.save_model(model_path)
 
     print("Training completed.")
+
 
 if __name__ == "__main__":
     train_agent(1)  # Adjust as necessary
