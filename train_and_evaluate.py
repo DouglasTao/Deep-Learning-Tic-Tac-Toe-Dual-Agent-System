@@ -4,10 +4,11 @@ as well as controlling the operation of the game.
 """
 
 
-from tic_tac_toe_env import TicTacToe
-from tic_tac_toe_agent import Agent
 import os
 import time
+from tic_tac_toe_env import TicTacToe
+from tic_tac_toe_agent import Agent
+
 
 def train_agent(episodes):
     """
@@ -21,13 +22,21 @@ def train_agent(episodes):
     for episode in range(episodes):
         game.reset()
         done = False
+        states, actions, rewards = [], [], []
         while not done:
             state = game.board.copy()
             action = agent.choose_action(state)
-            game.move(action)
+            valid_move = game.move(action)
+            if not valid_move:
+                continue
             reward = game.check_winner()
-            agent.train([state], [action], [reward])
+            if reward is not None:
+                states.append(state)
+                actions.append(action)
+                rewards.append(reward)
             done = reward is not None
+
+        agent.train(states, actions, rewards)
 
         if episode % 10 == 0:  # Print every 10 episodes to reduce clutter
             print(f"Episode {episode + 1}/{episodes} completed.")

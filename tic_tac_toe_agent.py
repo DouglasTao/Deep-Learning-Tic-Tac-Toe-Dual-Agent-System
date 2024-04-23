@@ -55,3 +55,10 @@ class Agent:
         """
         self.model.save(file_path)
         print(f"Model saved to {file_path}.")
+
+    def get_latest_loss(self):
+        """
+        Retrieves the latest loss value from the model training process.
+        """
+        _, latest_loss = self.model.fit(np.zeros((1, 9)), np.zeros((1, 9)), verbose=0)
+        return latest_loss
