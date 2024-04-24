@@ -29,29 +29,31 @@ def train_agent(episodes):
             state = game.board.copy()
             action = agent.choose_action(state)
             valid_move = game.move(action)
+            print(f"Action chosen: {action}, Valid move: {valid_move}, Board: {game.board}")
             if not valid_move:
                 continue
             reward = game.check_winner()
+            print(f"Reward: {reward}, Game Done: {done}")
             if reward is not None:
                 states.append(state)
                 actions.append(action)
                 rewards.append(reward if reward == game.current_player else -reward)
+                done = True  # This sets done when a reward is determined
                 if reward == 1:
                     win_count += 1
                 elif reward == -1:
                     loss_count += 1
                 elif reward == 0:
                     draw_count += 1
-            done = reward is not None
 
         loss_history = agent.train(states, actions, rewards)
         if episode % 10 == 0:
-            print(f"Episode {episode + 1}/{episodes} completed "
-                  f"with average loss {np.mean(loss_history):.4f}")
+            print(f"Episode {episode + 1}/{episodes} completed with average loss {np.mean(loss_history):.4f}")
 
     total_games = win_count + loss_count + draw_count
     win_rate = win_count / total_games if total_games != 0 else 0
     print(f"Win rate: {win_rate:.2f}, Training time: {time.time() - start_time:.2f} seconds")
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_directory = os.path.join(current_dir, "train")
     if not os.path.exists(model_directory):
