@@ -61,26 +61,32 @@ def save_model(agent, directory="train", filename="tic_tac_toe_model.h5"):
 
 def train_agent(episodes):
     """
-    Train the agent over a specified number of episodes.
+    Train the agent over a specified number of episodes
+    and log loss values to a file using UTF-8 encoding.
     """
     game, agent = initialize_game()
     win_count, loss_count, draw_count = 0, 0, 0
     start_time = time.time()
 
-    for episode in range(episodes):
-        win_count, loss_count, draw_count, loss_history = \
-        play_episode(game, agent, win_count, loss_count, draw_count)
-        if episode % 10 == 0:
+    # Open a file to write loss histories with UTF-8 encoding
+    with open("train/loss_history.txt", "w", encoding='utf-8') as file:
+        file.write("Episode,Average Loss\n")
+
+        for episode in range(episodes):
+            win_count, loss_count, draw_count, loss_history = \
+            play_episode(game, agent, win_count, loss_count, draw_count)
+            average_loss = np.mean(loss_history) if loss_history else 0
+            file.write(f"{episode + 1},{average_loss:.4f}\n")
             print(f"Episode {episode + 1}/{episodes} completed "
-                  f"with average loss {np.mean(loss_history):.4f}")
+               f"with average loss {average_loss:.4f}")
 
-    total_games = win_count + loss_count + draw_count
-    win_rate = win_count / total_games if total_games != 0 else 0
-    print(f"Win rate: {win_rate:.2f}, Training time: {time.time() - start_time:.2f} seconds")
+        total_games = win_count + loss_count + draw_count
+        win_rate = win_count / total_games if total_games != 0 else 0
+        print(f"Win rate: {win_rate:.2f}, Training time: {time.time() - start_time:.2f} seconds")
 
-    save_model(agent)
+        save_model(agent)
 
-    print("Training completed.")
+        print("Training completed.")
 
 
 if __name__ == "__main__":
@@ -94,4 +100,3 @@ if __name__ == "__main__":
             print("Please enter a valid positive integer.")
 
     train_agent(num_episodes)
-
